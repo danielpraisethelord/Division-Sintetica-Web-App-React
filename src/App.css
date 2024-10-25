@@ -40,3 +40,23 @@
 .read-the-docs {
   color: #888;
 }
+
+.division-sintetica {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.division-step {
+  margin-bottom: 15px;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+table, th, td {
+  border: 1px solid black;
+  padding: 10px;
+}

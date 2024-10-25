@@ -6,7 +6,7 @@ function App() {
   const [coeficientes, setCoeficientes] = useState([]);
   const [divisores, setDivisores] = useState([]);
   const [raices, setRaices] = useState([]);
-  const [log, setLog] = useState([]);
+  const [logVisual, setLogVisual] = useState([]);
 
   const handleGradoChange = (e) => {
     setGradoPolinomio(e.target.value);
@@ -51,33 +51,37 @@ function App() {
 
   const divisionSintetica = (divisoresRacionales, coeficientes) => {
     let raices = new Set();
-    let gradoActual = coeficientes.length - 1;
-    let log = [];
+    let logVisual = [];
 
     function encontrarRaices(divisores, coeficientes, raices) {
       for (let divisor of divisores) {
         let resultadoDivision = [coeficientes[0]];
+        let multiplicaciones = [];
+        let resultados = [coeficientes[0]];
 
+        // Proceso de división sintética
         for (let i = 1; i < coeficientes.length; i++) {
-          let nuevoValor = coeficientes[i] + divisor * resultadoDivision[i - 1];
-          resultadoDivision.push(nuevoValor);
+          let multiplicacion = divisor * resultados[i - 1];
+          multiplicaciones.push(multiplicacion);
+          let suma = coeficientes[i] + multiplicacion;
+          resultados.push(suma);
         }
 
-        log.push(`Resultado de la división sintética con divisor ${divisor} : [${resultadoDivision.join(', ')}]`);
-
-        if (Math.abs(resultadoDivision[resultadoDivision.length - 1]) < 1e-6) {
+        // Solo guardamos el log si el último valor en resultados es 0
+        if (Math.abs(resultados[resultados.length - 1]) < 1e-6) {
           raices.add(divisor);
-          coeficientes = resultadoDivision.slice(0, resultadoDivision.length - 1);
-          gradoActual = coeficientes.length - 1;
+          logVisual.push({
+            divisor,
+            coeficientes: [...coeficientes],
+            multiplicaciones: [...multiplicaciones],
+            resultados: [...resultados]
+          });
 
-          log.push(`Raiz encontrada: ${divisor}`);
-          log.push(`Grado actual: ${gradoActual}`);
-          log.push(`Nuevo polinomio: [${coeficientes.join(', ')}]`);
+          // Actualizamos los coeficientes quitando el último término (residuo)
+          coeficientes = resultados.slice(0, resultados.length - 1);
 
-          if (gradoActual === 0) return;
-
+          // Recalculamos los divisores para el polinomio reducido
           let nuevosDivisores = calcularDivisoresRacionales(coeficientes);
-          log.push(`Divisores racionales: [${nuevosDivisores.join(', ')}]`);
           encontrarRaices(nuevosDivisores, coeficientes, raices);
           return;
         }
@@ -85,7 +89,7 @@ function App() {
     }
 
     encontrarRaices(divisoresRacionales, coeficientes, raices);
-    setLog(log);
+    setLogVisual(logVisual);
     return Array.from(raices);
   };
 
@@ -95,9 +99,6 @@ function App() {
     setDivisores(divisores);
     const raices = divisionSintetica(divisores, coeficientes);
     setRaices(raices);
-    if (raices.length !== parseInt(gradoPolinomio)) {
-      setLog(prevLog => [...prevLog, "No se encontraron todas las raíces racionales."]);
-    }
   };
 
   return (
@@ -117,16 +118,44 @@ function App() {
         <br />
         <button type="submit">Calcular</button>
       </form>
+
       <div>
-        <h2>Coeficientes:</h2>
-        <p>{coeficientes.join(', ')}</p>
-        <h2>Divisores Racionales:</h2>
-        <p>{divisores.join(', ')}</p>
         <h2>Raíces Encontradas:</h2>
         <p>{raices.join(', ')}</p>
-        {raices.length !== parseInt(gradoPolinomio) && <p>No se encontraron todas las raíces racionales.</p>}
-        <h2>Proceso:</h2>
-        <pre>{log.join('\n')}</pre>
+
+        <h2>Procedimiento</h2>
+        <div className="division-sintetica">
+          {logVisual.map((logItem, index) => (
+            <div key={index} className="division-step">
+              <h3>Divisor: {logItem.divisor}</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Polinomio</th>
+                    {logItem.coeficientes.map((coef, idx) => (
+                      <th key={idx}>{coef}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Multiplicaciones</td>
+                    <td> </td>  {/* No hay multiplicación en la primera columna */}
+                    {logItem.multiplicaciones.map((multiplicacion, idx) => (
+                      <td key={idx}>{multiplicacion}</td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>Resultados</td>
+                    {logItem.resultados.map((resultado, idx) => (
+                      <td key={idx}>{resultado}</td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
