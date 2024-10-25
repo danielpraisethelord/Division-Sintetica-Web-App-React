@@ -51,12 +51,30 @@
   margin-bottom: 15px;
 }
 
+/* Estilo general de la tabla */
 table {
+  width: 100%;
   border-collapse: collapse;
-  margin: 0 auto;
 }
 
-table, th, td {
-  border: 1px solid black;
-  padding: 10px;
+th, td {
+  padding: 8px;
+  text-align: center;
 }
+
+/* Aplica el borde debajo de la primera fila del tbody */
+tbody tr:first-child {
+  border-bottom: 2px solid white;
+}
+
+/* Aplica un borde a la penúltima celda antes de la columna del divisor */
+.borde-derecho {
+  border-right: 2px solid white; /* Puedes ajustar el grosor y el color */
+}
+
+
+
+tbody td {
+  border: none;
+}
+

@@ -101,6 +101,29 @@ function App() {
     setRaices(raices);
   };
 
+  const generarPolinomio = (coeficientes) => {
+    return coeficientes
+      .map((coef, idx) => {
+        const grado = coeficientes.length - idx - 1;
+        let signo = coef > 0 && idx !== 0 ? '+' : ''; // Si el coef es positivo y no es el primer término, agregar "+"
+  
+        if (grado === 0) return `${signo}${coef}`; // Término independiente
+        if (grado === 1) return `${signo}${coef}x`; // Término de grado 1
+        return `${signo}${coef}x^${grado}`; // Otros términos
+      })
+      .filter(term => !term.startsWith("0")) // Filtramos los términos con coeficiente 0
+      .join(" "); // Unimos los términos con un espacio para separar los signos
+  };
+  
+  const handleClear = () => {
+    setGradoPolinomio('');
+    setCoeficientes([]);
+    setDivisores([]);
+    setRaices([]);
+    setLogVisual([]);
+  };
+  
+
   return (
     <div className="App">
       <h1>División Sintética</h1>
@@ -117,42 +140,53 @@ function App() {
         ))}
         <br />
         <button type="submit">Calcular</button>
+        <button type="button" onClick={handleClear}>Limpiar</button>
+
       </form>
 
       <div>
+      <h2>Polinomio:</h2>
+      <p>{generarPolinomio(coeficientes)}</p>
         <h2>Raíces Encontradas:</h2>
         <p>{raices.join(', ')}</p>
 
-        <h2>Procedimiento</h2>
+        <h2>Proceso:</h2>
         <div className="division-sintetica">
           {logVisual.map((logItem, index) => (
             <div key={index} className="division-step">
               <h3>Divisor: {logItem.divisor}</h3>
               <table>
-                <thead>
-                  <tr>
-                    <th>Polinomio</th>
-                    {logItem.coeficientes.map((coef, idx) => (
-                      <th key={idx}>{coef}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Multiplicaciones</td>
-                    <td> </td>  {/* No hay multiplicación en la primera columna */}
-                    {logItem.multiplicaciones.map((multiplicacion, idx) => (
-                      <td key={idx}>{multiplicacion}</td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>Resultados</td>
-                    {logItem.resultados.map((resultado, idx) => (
-                      <td key={idx}>{resultado}</td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
+              <thead>
+                <tr>
+                  <th>Polinomio</th>
+                  {logItem.coeficientes.map((coef, idx) => (
+                    <th key={idx}>{coef}</th>
+                  ))}
+                  <th>Divisor</th> {/* Columna adicional para el divisor */}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Multiplicaciones</td>
+                  <td></td> {/* No hay multiplicación en la primera celda */}
+                  {logItem.multiplicaciones.map((multiplicacion, idx) => (
+                    <td key={idx} className={idx === logItem.multiplicaciones.length - 1 ? 'borde-derecho' : ''}>
+                      {multiplicacion}
+                    </td>
+                  ))}
+                  <td>{logItem.divisor}</td> {/* Se muestra el divisor al final */}
+                </tr>
+                <tr>
+                  <td>Resultados</td>
+                  {logItem.resultados.map((resultado, idx) => (
+                    <td key={idx} className={idx === logItem.resultados.length - 1 ? 'borde-derecho' : ''}>
+                      {resultado}
+                    </td>
+                  ))}
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
             </div>
           ))}
         </div>
