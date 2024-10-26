@@ -12,7 +12,9 @@
   "dependencies": {
     "divisionsinteticareact": "file:",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-latex-next": "^3.0.0",
+    "sweetalert2": "^11.14.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

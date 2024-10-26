@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import Swal from 'sweetalert2';
 
 function App() {
   const [gradoPolinomio, setGradoPolinomio] = useState('');
@@ -7,6 +8,7 @@ function App() {
   const [divisores, setDivisores] = useState([]);
   const [raices, setRaices] = useState([]);
   const [logVisual, setLogVisual] = useState([]);
+  
 
   const handleGradoChange = (e) => {
     setGradoPolinomio(e.target.value);
@@ -99,7 +101,29 @@ function App() {
     setDivisores(divisores);
     const raices = divisionSintetica(divisores, coeficientes);
     setRaices(raices);
+  
+    // Verificar si se encontraron todas las raíces
+    if (raices.length < coeficientes.length - 1) {
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'No se encontraron todas las raíces racionales.',
+        icon: 'warning',
+        timer: 1500,
+        showConfirmButton: false
+      });
+    } else {
+      // Si se encuentran todas las raíces
+      Swal.fire({
+        title: 'Éxito',
+        text: 'Se encontraron todas las raíces racionales.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
   };
+  
+  
 
   const generarPolinomio = (coeficientes) => {
     return coeficientes
@@ -127,6 +151,15 @@ function App() {
   return (
     <div className="App">
       <h1>División Sintética</h1>
+      <h4>
+        Alumnos:        
+      </h4>
+      <h4>
+        Uziel López Hernández
+      </h4>
+      <h4>
+        Daniel Yosef Santiago García
+      </h4>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Grado del Polinomio:</label>
@@ -139,22 +172,30 @@ function App() {
           </div>
         ))}
         <br />
-        <button type="submit">Calcular</button>
-        <button type="button" onClick={handleClear}>Limpiar</button>
+        <button type="submit" className="button-group">Calcular</button>
+        <button type="button" className="button-group" onClick={handleClear}>Limpiar</button>
+
 
       </form>
 
       <div>
       <h2>Polinomio:</h2>
       <p>{generarPolinomio(coeficientes)}</p>
-        <h2>Raíces Encontradas:</h2>
-        <p>{raices.join(', ')}</p>
+      <h2>Raíces Encontradas:</h2>
+<p>
+  {raices.map(raiz => 
+    Number.isInteger(raiz) ? raiz : raiz.toFixed(4)
+  ).join(', ')}
+</p>
+
 
         <h2>Proceso:</h2>
         <div className="division-sintetica">
           {logVisual.map((logItem, index) => (
             <div key={index} className="division-step">
-              <h3>Divisor: {logItem.divisor}</h3>
+              <h3>Divisor: {Number.isInteger(logItem.divisor) 
+                  ? logItem.divisor 
+                  : logItem.divisor.toFixed(4)}</h3>
               <table>
               <thead>
                 <tr>
@@ -174,8 +215,10 @@ function App() {
                       {multiplicacion}
                     </td>
                   ))}
-                  <td>{logItem.divisor.toFixed(4)}</td> {/* Se muestra el divisor al final con 4 decimales */}
-
+                  <td>{Number.isInteger(logItem.divisor) 
+                  ? logItem.divisor 
+                  : logItem.divisor.toFixed(4)}
+                  </td> {/* Se muestra el divisor al final con 4 decimales */}
                 </tr>
                 <tr>
                   <td>Resultados</td>
