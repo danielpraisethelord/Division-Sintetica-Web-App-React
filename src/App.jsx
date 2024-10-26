@@ -174,7 +174,8 @@ function App() {
                       {multiplicacion}
                     </td>
                   ))}
-                  <td>{logItem.divisor}</td> {/* Se muestra el divisor al final */}
+                  <td>{logItem.divisor.toFixed(4)}</td> {/* Se muestra el divisor al final con 4 decimales */}
+
                 </tr>
                 <tr>
                   <td>Resultados</td>
